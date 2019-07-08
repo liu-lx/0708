@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/reset.min.css">
+    <link rel="stylesheet" href="css/index.css">
+<style>
+#list img{
+    opacity: 0;
+    transition: 1s;
+}
+.header a i.up.red{
+    border-bottom-color: red;
+}
+.header a i.down.red{
+    border-top-color: red;
+}
+
+</style>
+</head>
+<body>
+<div class="content">
+    <div class="header">
+        <span>排序</span>
+        <a href="javascript:;" kk="time">上架时间
+            <i class="up"></i>
+            <i class="down"></i>
+        </a>
+        <a href="javascript:;" kk="hot">热度
+            <i class="up"></i>
+            <i class="down"></i>
+        </a>
+        <a href="javascript:;" kk="price">价格
+            <i class="up"></i>
+            <i class="down"></i>
+        </a>
+        <button id="btn">还原</button>
+        <select name="" id="sele">
+            <option value="title">商品文字搜索</option>
+            <option value="price">商品价格搜索</option>
+            <option value="hot">商品热度搜索</option>
+        </select>
+        <input type="text" id="txt"/>
+        <button id="search">搜索</button>
+
+    </div>
+    <ul id="list">
+        <!-- <li>
+            <img src="img/1.jpg" alt="">
+            <span>华为畅享7（香槟金）</span>
+            <span>2018-01-01</span>
+            <span>1</span>
+            <span>992</span>
+        </li> -->
+    </ul>
+</div>
+<!-- <script src="./think.js"></script> -->
+<script>
+    /*
+       1.先延迟加载
+            拿到数据，结构的渲染
+
+            延迟加载的判断
+                1.getBoundingClientRect().top  当前元素到可视区顶部的距离
+
+
+       2.商品排序
+
+
+    */
+
+
+    class YCJZ {
+        constructor(id) {
+            // this.data = [];
+            this.ul = document.getElementById(id);
+            this.lis = null;
+            this.btns = document.querySelectorAll('.header a');
+            this.ary = ['time','hot','price'];//时间，热度，价钱
+        }
+
+        render(data){//数组
+            let html = '';
+            data.forEach(e=>{//e代表数组中的每一项
+                html += `
+                        <li>
+                        <img pic="${e.img}" >
+                        <span>${e.title}</span>
+                        <span>${e.time}</span>
+                        <span>${e.hot}</span>
+                        <span>${e.price}</span>
+                    </li>
+                `;
+            });
+            this.ul.innerHTML = html;
+            console.log( this.ul.innerHTML);
+            
+            this.lis = this.ul.children;
+            console.log(this.lis);
+            
+        }
+
+        sort(data,cb){//工具；排序方法
+            data = JSON.parse(JSON.stringify(data));//stringify转成json模式，parse在转化回来,相当于深拷贝换地址
+            this.btns.forEach((ele,i)=>{//btns按钮，循环每一项，ele每一项，i是索引
+                ele.onoff = true;//ele每一项新增一个onoff  //
+                let that = this;//当前实例
+                ele.onclick = function(){
+                    if(this.onoff){//当前实例的onoff是不是   true
+                        data.sort((a,b)=>{//sort数组排序，返回新数组
+                            if(that.ary[i] === 'time'){//实例中的ary[i]是不是time（时间）
+                                a = a[that.ary[i]].split('-').join('');
+                                b = b[that.ary[i]].split('-').join('');
+                            }else{
+                                a = a[that.ary[i]];
+                                b = b[that.ary[i]];
+                            }
+                            return  a - b ;//顺序排序
+                        });
+                    }else{
+                        data.sort((a,b)=>{//数组排序
+                            if(that.ary[i] === 'time'){//判断是不是时间呢一个
+                            
+                                a = a[that.ary[i]].split('-').join('');
+                                b = b[that.ary[i]].split('-').join('');
+                            }else{
+                                a = a[that.ary[i]];
+                                b = b[that.ary[i]];
+                            }
+                            return  b-a;//倒序排序
+                        });
+                    }
+
+                    this.onoff = !this.onoff;//falss
+                    that.render(data);
+                    //当重新渲染之后，然后执行一个函数。
+                    cb && cb();//cb等于 yc.getDate的值  是个函数function(data)
+                }
+            });
+            
+        }
+        scrollPic(){
+            console.log(this.lis);
+            //延迟加载
+           // console.log(that.lis[0].getBoundingClientRect().top);
+                    // console.log('可视区的高度',this.innerHeight);
+            
+            for(let i=0;i<this.lis.length;i++){
+                let iTop = this.lis[i].getBoundingClientRect().top;//getBoundingClientRect获取元素到浏览器顶部的距离  '纯数字'
+                //如果某个li的高度小于可视区顶部的距离就加载
+                if(iTop <= this.iH){//每一项到顶部的高度  <=  浏览器可视区的高度
+                    let img = this.lis[i].children[0];
+                    if(!img.src){
+                        img.src = img.getAttribute('pic');//getAttribute获取元素行间属性
+                        setTimeout(()=>{
+                            img.style.opacity = 1;
+                            img.removeAttribute('pic');
+                        },100);
+                    }
+                }
+            }
+        }
+        getDate(cb){
+            fetch('./json/product.json')
+            .then(e=>e.json())
+            .then(data=>{
+                data.push(...data,...data);
+                this.render(data);
+                // this.lis = this.ul.children;
+                this.iH = window.innerHeight;//浏览器可视区的高度
+                //当所有数据都请求回来，如果有回调函数就调用回调函数
+                console.log(data);
+                
+                cb && cb(data); //钩子函数，回调函数
+                
+                window.onscroll = this.scrollPic.bind(this);
+            });
+        }
+    }
+    let yc = new YCJZ('list');
+    yc.getDate(function(data){
+        //当数据获取出来之后调用延迟加载
+        yc.scrollPic();
+        yc.sort(data,function(){
+            //当排好序，渲染完成之后，在调用延迟加载
+            yc.scrollPic();
+        });
+    });
+    
+   
+    
+   
+   
+
+
+
+</script>
+</body>
+</html>

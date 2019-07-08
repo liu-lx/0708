@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>简版排序</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .box {
+      margin: 20px auto;
+      border: 1px solid #00b38a;
+      width: 600px;
+    }
+    .header {
+      height: 40px;
+      line-height: 40px;
+    }
+    .header > a {
+      padding: 0 25px;
+      text-decoration: none;
+    }
+    ul, li {
+      list-style: none;
+    }
+    ul > li {
+      height: 40px;
+      line-height: 40px;
+      font-size: 20px;
+    }
+    ul > li:nth-child(odd) {
+      background: yellow;
+    }
+    ul > li:nth-child(even) {
+      background: bisque;
+    }
+    ul > li > span {
+      padding: 0 15px;
+    }
+  </style>
+</head>
+<body>
+<div class="box">
+  <div class="header" id="header">
+    <a href="javascript:;">上架日期</a>
+    <a href="javascript:;">价格</a>
+    <a href="javascript:;">热度</a>
+  </div>
+  <ul class="list" id="list">
+    <li data-price="100" data-time="2015-12-12" data-hot="123">
+      <span>上架日期：2015-12-12</span>
+      <span>价格：￥100</span>
+      <span>销量：123</span>
+    </li>
+    <li data-price="99" data-time="2016-10-01" data-hot="345">
+      <span>上架日期：2016-10-01</span>
+      <span>价格：￥99</span>
+      <span>销量：345</span>
+    </li>
+    <li data-price="10" data-time="2014-09-03" data-hot="999">
+      <span>上架日期：2014-09-03</span>
+      <span>价格：￥10</span>
+      <span>销量：999</span>
+    </li>
+    <li data-price="999" data-time="2019-02-05" data-hot="15">
+      <span>上架日期：2019-02-05</span>
+      <span>价格：￥999</span>
+      <span>销量：15</span>
+    </li>
+    <li data-price="520" data-time="2017-05-20" data-hot="27">
+      <span>上架日期：2017-05-20</span>
+      <span>价格：￥520</span>
+      <span>销量：27</span>
+    </li>
+    <li data-price="880" data-time="2013-11-22" data-hot="45">
+      <span>上架日期：2013-11-22</span>
+      <span>价格：￥880</span>
+      <span>销量：45</span>
+    </li>
+  </ul>
+</div>
+
+<script>
+//1,获取元素（分析操作谁，我们就要获取谁）
+let headerBox = document.getElementById('header'),
+linkList = headerBox.getElementsByTagName('a'),
+listBox = document.getElementById('list'),
+productList = listBox.getElementsByTagName('li');
+
+//2.按照价格给 productList排序
+
+//let flag = -1;
+let sortList = function () {
+    let innerText = this.innerText;
+    //getElementsByTagName获取的是一个类数组集合，向调用 sort ,需要把productList 转为一个数组
+    let productAry = [].slice.call(productList);
+     let aInn,bInn;
+     //基于sort按照价格给productAry排序
+     productAry.sort((a, b) => {
+         switch (innerText) {
+             case '上架日期':
+             aInn = a.getAttribute('data-time');
+             bInn = b.getAttribute('data-time');
+             break;
+             case '价格':
+             aInn = a.getAttribute('data-price');
+             bInn = b.getAttribute('data-price');
+             break;
+             case '热度':
+             aInn = a.getAttribute('data-hot');
+             bInn = b.getAttribute('data-hot');
+             break;
+         }
+         if (innerText === '上架日期') {
+             //如果点击的是上架日期，我们需要把日期中划线去掉（-）
+             aInn = aInn.replace(/-/g,'');
+             bInn = bInn.replace(/-/g,'');
+         }
+         return (aInn - bInn)*this.flag;
+     });
+     //把排号序的数组中LI一次添加到页面中4
+     for (let i=0; i<productAry.length; i++) {
+         listBox.appendChild(productAry[i])//appendchild是向容器末尾追加一个新元素，单数listBox里面还是6个，不是12个，值是顺序发生了改变
+     }
+     };
+     //给价格按钮绑定一个点击事件，在事件触发是调用sortList方法
+     //循环绑定事件
+     for (let j=0; j<linkList.length; j++) {
+         linkList[j].flag = -1;//应为前面的操作，是三个按钮点击是修改的是同一全局中的FLAA变量，所以会引发排序混乱的BUG，为了解决这个问题，让每个A标签直接拥有一个FLAG.每次点击只给直接的FLAG *= -1；
+         linkList[j].onclick = function () {
+             //重置其他两个A标签里面的FLAG
+             for(let k=0; k<linkList.length; k++) {
+                 if(linkList[k] !==this) {
+                     //只要不是当前点击的就重置期flag
+                     linkList[k].flag = -1;
+                 }
+             }
+             this.flag*=-1;
+             sortList.call(this);
+         }
+     }
+
+     
+
+
+</script>
+
+</body>
+</html>

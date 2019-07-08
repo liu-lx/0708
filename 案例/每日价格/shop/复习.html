@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+    
+<meta charset="UTF-8">
+<title>珠峰培训-商品排序</title>
+<!--import css-->
+<link rel="stylesheet" href="css/reset.min.css"/>
+<link rel="stylesheet" href="css/index.css"/>
+</head>
+<body>
+<div class="container">
+<!--HEADER-->
+<div class="header clear" id="header">
+    <span>排序：</span>
+    <a href="javascript:;">上架时间</a>
+    <a href="javascript:;">价格</a>
+    <a href="javascript:;">热度</a>
+</div>
+
+<!--LIST-->
+<ul class="list clear" id="list">
+    <!--<li><a href="javascript:;">
+        <img src="img/1.jpg" alt="">
+        <p>HUAWEI Mate 10 4GB+64GB 全网通版（亮黑色）</p>
+        <span>￥3899</span>
+    </a></li>-->
+</ul>
+</div>
+    <script>
+    
+/* 数据动态获取和绑定
+     *  =>真实项目中 大部分数据都不是写死的，而是通过AJAX/JSONP等技术从服务端根据api接口地址获取的
+     *  1>基于AJAX/JSONP从服务端获取数据
+     *  2>解析处理从服务端获取的数据
+     *  3>数据绑定就是把获取的数据绑定到页面中的HTML结构上，ES6模版字符串   ``
+     */
+
+///排序开始
+//1获取元素
+let headerBox = document.getElementById('header'),
+LinkList = headerBox.getElementsByTagName('a'),
+ListBox = document.getElementById('list'),
+productList = ListBox.getElementsByTagName('li');
+
+
+
+
+//1基于AJAX获取数据
+let productData = null;
+let xhr = new XMLHttpRequest();//创建一个ajax实例
+xhr.open('GET','json/product.json',false);//调用XHR的open 方法
+/**
+ * open方法的 参数
+ * 1.http method 请求方式
+ * 2.接口地址 服务端提供 的获取地址的一个路径
+ * 3.设置同步还是一步 true表示异步 false表示同步 项目中chang用的实异步
+ */
+xhr.onreadystatechange = function() {
+  //监听xhr的onreadystatechang事件
+  if(xhr.readyState === 4 && xhr.status === 200) {
+    //如果满足这个条件 就表示当前请求已经顺利完成
+    productData = xhr.responseText;
+  }
+};
+xhr.send(null);//发送ajax请求
+//console.log( productData);
+//command+shift+del 清除浏览器缓存
+//let obj = {"name": "zhufeng"};//JSON格式的对象，属性名和属性值都是用双引号包着 操作起来和普通对象没有区别
+//let str = '{"name":"zhufeng"}';//JSON格式的字符串
+/**
+ * 从服务端获取的数据大多数情况下都是JSON格式的，而且都是JSON格式的字符串 （其他格式例如XML，HTML）
+ * JSON格式：JSON是一种数据格式，不是一种数据类型 有两种情况
+ * 1>JSON格式的对象，对象的属性名和属性值（数字例外）都用双引号扩起来的，操作起来没有区别
+ * 2. JSON 格式的字符串，长得很像对象，并且属性值和属性名同样是用双引号括起来的一个字符串。
+ * 在window对象上有一个 JSON对象，里面有两个方法：
+ * 1>.JSON.parse() 把JSON格式的字符串转换成对象
+ *  2. JSON.stringify() 把对象转化为JSON格式的字符串
+ */
+
+//2.解析从服务端获取的数据
+productData = JSON.parse(productData);
+console.log(productData);
+
+/* 3.数据绑定：基于我们从服务端获取的数据，把页面中需要的和html结构搞出来，最后把数据和html添加到页面到指定
+ * 容器中
+ *
+ * 字符串拼接
+ * 1.模版字符串 ``
+ * 2.字符串拼接
+ * 3.模版引擎：原理也是字符串拼接
+ *
+ * 动态创建DOM
+ * creatElement appendChild
+ * 弊端：操作起来麻烦 会造成Dom回流，消耗性能
+ */
+let str = ``; //模版字符串
+for (let i = 0; i < productData.length; i++) {
+  let item = productData[i];
+  //str 在这里还值是一个字符串，不能通过，属性名的方式自定义属性
+  str += `<li data-price="${item.price}"
+              data-time="${item.time}"
+              data-hot="${item.hot}">
+            <a href="javascript:;">
+             <img src="${item.img}" alt="">
+             <p>${item.title}</p>
+             <span>¥${item.price}</span>
+               <span>上架时间${item.time}</span>
+              <span>热度${item.hot}</span>
+            </a>
+        </li>`
+}
+////把拼接好的html 字符串插入到页面的指定容器中，(这些拼接好的字符串在没有添加到页面中之前还不是元素)
+  console.log(str)
+ 
+  ListBox.innerHTML = str
+
+
+
+
+
+// ///排序开始
+// //1获取元素
+// let headerBox = document.getElementById('header'),
+// LinkList = headerBox.getElementsByTagName('a'),
+// ListBox = document.getElementById('list'),
+// productList = ListBox.getElementsByTagName('li');
+
+//基于价格给productList里面的 LI排序
+let flag = -1
+
+let sortList = function(that,index){
+  //用来处理排序逻辑的方法
+  //1根据getElenmentsBTagName获取的是一个元素集合，而元素集合是一个
+  //类数组，如果向调用SORT进行排序，需要先将类数组转化为数组,数组中的LI并不是
+  //克隆出来的，而是原有类数组中元素对象对应的堆内存地址
+  // let productArr = [].slice.call(productList);第一种方法
+  let productArr = [...productList]
+  // let innerText=thar.innerHTML
+  // let aInn,bInn;
+
+  // console.log(productList);
+ productArr.sort((a,b) => {
+   //a和b都是LI元素对象，所以不能直接相见
+   //我们需要从li 上面获取到价格
+    //  let innerText=thar.innerHTML
+     let aInn,bInn;
+     let ary = ['data-time','data-price','data-hot']
+
+     aInn = a.getAttribute('data-price')
+     bInn = b.getAttribute('data-price')
+     let reg = /-/g;
+     if(index === 0){
+      aInn = a.getAttribute(reg,'')
+     bInn = b.getAttribute(reg,'')
+     }
+     return(aInn-bInn)*that.flag//排序时使用当前被点击的A标签私有的flag
+
+  //  switch(innerText){
+  //    case'上架时间':
+  //    aInn = a.getAttribute('data-price').replace(/-/g,'')
+  //  bInn = b.getAttribute('data-price').replace(/-/g,'')
+  //    break;
+  //    case'价格':
+  //    aInn = a.getAttribute('data-price')
+  //  bInn = b.getAttribute('data-price')
+  //    break;     
+     
+  //    case'热度':
+  //    aInn = a.getAttribute('data-price')
+  //  bInn = b.getAttribute('data-price')
+  //    break;
+  //  }     ;
+   //3.productArr排好序后页面种并且没有按照价格排列，原因是我们还需要把拍好序的LI依次插入到UL
+   for(let i=0; i<productArr.length; i++) {
+     listBox.appendChild(productArr)
+   }
+   //我们现在需要按照上架时间还有热度排序;但是应为不管点击呢个A标签都会执行SORTlsit方法，但是sortList方法却不知道你点击的是呢个A标签。
+   //但是事件函数中的this就是当前被点击的A标签，我们需要通过某种方式
+   if (innerText === '上架日期') {
+             //如果点击的是上架日期，我们需要把日期中划线去掉（-）
+             aInn = aInn.replace(/-/g,'');
+             bInn = bInn.replace(/-/g,'');
+         }
+  
+  //  console.log(aInn-bInn);
+   return (aInn-bInn)*flag
+   //排序时使用当前被点击的A标签
+  //  return bInn-aInn
+ })
+ console.log(productArr)
+ //3.productArr 排好序后页面中并没有按照价格排列。原因是我们还需要把排好序的LI依此插入到UL中#List
+ for (let i=0; i<productArr.length; i++) {
+   listBox.appendChild(productArr[i])//appendChild向元素末尾添加元素，但是页面中还是10个而不是20个，值是原来的10个顺序发生了变更，为啥？
+   //DOM映射机制，页面中的html元素和我们通过JS相关方法（getElenmentsByTagName获取的元素集合或getElenmentsByID对象存在映射关系（一个改另一个跟着改）
+   //List.style.backgroundColor = 'red':将List[i]元素对象对应的堆内存空间下的 style属性下的backgroundColor属性修改为RED本质是操作JS的堆内存空间
+   //单数由于DOM映射机制，页面中的元素和元素对象的对内存地址是绑定在一起，所以我们修改了元素对象堆内存空间里面的值，页面中的标签会按照最新的值来渲染
+
+   //DOM映射机制第2种；数据绑定之前，我们获取UL下面的LI得到一个空集合，
+   //但是在数据绑定后，我们不需要重新获取，DOM映射机制会把新增加的元素映射到我们之前获取的集合种，此时元素集合不再是空集合.但是querySeleAll//querySelector获取
+   //的集合角静态集合【staticNodeList】而且是掐断了DOM映射的,基于这种方式获取的元素结合，在数据绑定完成后需要重新获取
+ }
+ for (let i=0; i<LinkList.length;i++){
+
+LinkList[i].flag=-1//让每个A标签私有自己的FLAG,并且在排序的时候
+LinkList[1].onclick = function(){
+//如果点击某一个A标签的是，想让列表按照当前唯独升序排序，就要保证当前A标签的FLAG是-1，所以我们点击当前A标签
+//点击价格A标签的时候给LI排序
+for(let j=0; j<LinkList.length; j++){
+  if(LinkList[j] !==this) {
+    LinkList[j].flag = -1;
+  }
+
+this.flag *=-1
+sortList(this, i);
+}
+}
+
+
+// for (let i=0; i<LinkList.length;i++){
+
+//   LinkList[i].flag=-1//让每个A标签私有自己的FLAG,并且在排序的时候
+// LinkList[1].onclick = function(){
+//   //如果点击某一个A标签的是，想让列表按照当前唯独升序排序，就要保证当前A标签的FLAG是-1，所以我们点击当前A标签
+//   //点击价格A标签的时候给LI排序
+//   for(let j=0; j<LinkList.length; j++){
+//     if(LinkList[j] !==this) {
+//       LinkList[j].flag = -1;
+//     }
+//   }
+//   this.flag *=-1
+//   sortList(this, i);
+// }
+// }
+  //productList 是UL下面的LI集合，集合种存储的是元素对象的堆内存地址；
+  //{0：fffxxx000,1：fffxxx111,2：fffxxx222,;}后来我们把productList转换成数组。在这个过程中只是把每个LI元素对象
+  //堆内存地址赋值到了数组中【xxxfff000,xxxfff111,xxxfff222...】
+  //然后我们oppendCCHIld发现xxxfff000这个堆内存空间在页面中有对应的LI，所以他不会克隆一个心点，而是把呢个对应的LI移动到容器的末尾。
+  //appendChild;是向容器的末尾追加元素，如果追加的元素已经存在于之前的容器中了此时并不会克隆一份（按照原来的，再造一份一模一样的新的）一份在追加，而是把原来
+  //的移动到容器的末尾
+
+    </script>
+</body>
+</html>

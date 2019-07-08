@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta charset="UTF-8">
+    <title>珠峰培训-商品排序</title>
+    <!--import css-->
+    <link rel="stylesheet" href="css/reset.min.css"/>
+    <link rel="stylesheet" href="css/index.css"/>
+</head>
+<body>
+<div class="container">
+    <!--HEADER-->
+    <div class="header clear" id="header">
+        <span>排序：</span>
+        <a href="javascript:;">上架时间</a>
+        <a href="javascript:;">价格</a>
+        <a href="javascript:;">热度</a>
+    </div>
+
+    <!--LIST-->
+    <ul class="list clear" id="list">
+        <!--<li><a href="javascript:;">
+            <img src="img/1.jpg" alt="">
+            <p>HUAWEI Mate 10 4GB+64GB 全网通版（亮黑色）</p>
+            <span>￥3899</span>
+        </a></li>-->
+    </ul>
+</div>
+
+<!--IMPORT JS-->
+<script >
+//数据动态获取和绑定
+//真实项目中，我们页面中的大部分数据都不是写死的，而是通过
+//AJAX/JSONP等技术服务器根据API接口地址获取
+//1，基于AJAX或JSONP从服务器端获取数据
+//2，解析处理我们从服务端获取的数据
+//3，数据绑定，就是把我们获取的数据绑定到页面HTML结构中。ES6模板字符串。`bg${i%2}`
+
+let productData=null
+
+//1,基于AJAX获取数据
+let xhr = new XMLHttpRequest();//创建一个AJAX实例对象
+xhr.open('GET','json/product.json',false);//条用xhr 的open方法
+//open方法的参数;
+//1.http method 请求方式GET
+//2.接口地址，服务器提供的获取地址的一个路径
+//3.设置同步还是异步，true表示异步，false表示同步；项目中常用的是异步，今天你为了简便使用同步
+
+xhr.onreadystatechange = function(){
+    //监听xhr 的onreadystatechange 事件
+    if(xhr.readyState === 4 && xhr.status === 200){
+        //如果满足这个小件，就表示当前请求已经顺利完成
+        productData=xhr.responseText;
+    }
+}
+xhr.send();//发送ajax请求
+
+console.log(productData)
+let obj = {"name":"zhufeng"};//json格式的格式对象，属性名和属性值都是用双引号包着，操作起来和普通对象没有任何区别
+console.log(obj.name)
+obj.name='珠峰'
+console.log(obj)//珠峰
+
+let str = '{"name":"珠峰"}'//json格式的字符串
+
+// 我们从服务端获取的数据大多数情况都是json格式,而且都是json格式的字符串.(其他格式列如XML,)
+//json是一种数据格式,不是一种数据类型;有两种情况,1json格式的对象,对象的属性名和属性值(数字例外)都用双引号括起来的,操作起来和普通对象没有任何区别
+//2,json  格式的字符串,长得很像对象,并且属性值和属性名同样是用双引号括起来的一个字符串.
+// window对象上面有一个json对象,json对象下面有2给方法;
+// 1,json.parse('')把json格式的字符串转化为对象
+// 2,json.stringify()把对象转化为json格式的字符串
+
+
+// 解析从服务器获取的数据
+productData = JSON.parse(productData);
+console.log(productData)
+
+</script>
+</body>
+</html>

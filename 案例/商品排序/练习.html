@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/reset.min.css">
+    <link rel="stylesheet" href="css/index.css">
+<style>
+#list img{
+    opacity: 0;
+    transition: 1s;
+}
+.header a i.up.red{
+    border-bottom-color: red;
+}
+.header a i.down.red{
+    border-top-color: red;
+}
+
+</style>
+</head>
+<body>
+<div class="content">
+    <div class="header">
+        <span>排序</span>
+        <a href="javascript:;" kk="time">上架时间
+            <i class="up"></i>
+            <i class="down"></i>
+        </a>
+        <a href="javascript:;" kk="hot">热度
+            <i class="up"></i>
+            <i class="down"></i>
+        </a>
+        <a href="javascript:;" kk="price">价格
+            <i class="up"></i>
+            <i class="down"></i>
+        </a>
+        <button id="btn">还原</button>
+        <select name="" id="sele">
+            <option value="title">商品文字搜索</option>
+            <option value="price">商品价格搜索</option>
+            <option value="hot">商品热度搜索</option>
+        </select>
+        <input type="text" id="txt"/>
+        <button id="search">搜索</button>
+
+    </div>
+    <ul id="list">
+        <!-- <li>
+            <img src="img/1.jpg" alt="">
+            <span>华为畅享7（香槟金）</span>
+            <span>2018-01-01</span>
+            <span>1</span>
+            <span>992</span>
+        </li> -->
+    </ul>
+</div>
+<script>
+    /*
+       1.先延迟加载
+            拿到数据，结构的渲染
+
+            延迟加载的判断
+                1.getBoundingClientRect().top  当前元素到可视区顶部的距离
+
+
+       2.商品排序
+
+
+    */
+   class ordering {
+       constructor(id){
+           this.ul = document.getElementById(id);
+           this.btns = document.querySelectorAll('.header>a');
+           this.ary = ['time','hot','price'];
+           this.getData();
+           window.onscroll = this.scrollPic.bind(this);
+        //    window.onscroll = this.scrollPic.bind(this);
+
+       }
+       getData(callback){
+        fetch('./json/product.json')
+               .then(item =>{
+                return item.json()
+               })
+               .then(data=>{
+                   data.push(...data,...data)
+                   this.data = data;
+                   this.render();
+                this.sort();
+                this.scrollPic()
+               })
+       }
+       render(){
+           let html = '';
+           this.data.forEach(item=>{
+               html += `<li>
+               <img data-pic=${item.img} alt="">
+               <span>${item.title}</span>
+               <span>${item.time}</span>
+               <span>${item.price}</span>
+               <span>${item.hot}</span>
+               </li> `
+           })
+           this.ul.innerHTML = html;
+       }
+       sort(){
+           this.data = JSON.parse(JSON.stringify(this.data));
+           this.btns.forEach((item,i)=>{
+               item.onoff = 1;
+               item.onclick = ()=>{
+                   item.onoff *= -1
+                   this.data.sort((a,b)=>{
+                       if(this.ary[i]==='time'){
+                           a = a[this.ary[i]].split('-').join('');
+                           b = b[this.ary[i]].split('-').join('');
+                       }else{
+                           a = a[this.ary[i]];
+                           b = b[this.ary[i]];
+                       }
+                       return (a-b)*item.onoff;
+                   })
+                   this.render()
+               }
+           })
+       }
+    scrollPic(){
+        this.lis = document.querySelectorAll('#list>li');
+        // this.imgs = document.querySelectorAll('#list>li>img');
+        this.imgs = document.querySelectorAll('#list>li>img');
+        for(let i = 0;i<this.lis.length;i++){
+            let windowHeight = window.innerHeight;
+            let liHeight = this.lis[i].getBoundingClientRect().top;
+            // if(liHeight <= windowHeight){
+            //     if(!this.imgs[i].dataset.pic){
+            //         continue;
+            //     }
+            //     this.imgs[i].src = this.imgs[i].dataset.pic;
+            //     let timer = setTimeout(()=>{
+            //         this.imgs[i].style.opacity = 1;
+            //         delete this.imgs[i].dataset.pic
+            //     },1000)
+            // }
+            let p = 
+        }
+    }
+
+};
+   let o = new ordering('list');
+
+</script>
+</body>
+</html>
