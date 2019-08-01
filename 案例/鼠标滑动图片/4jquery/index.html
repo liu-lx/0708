@@ -1,0 +1,201 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+	<title></title>
+
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		ul li,
+		ul ol {
+			list-style: none;
+		}
+
+		i,
+		b,
+		em,
+		strong {
+			font-style: normal;
+		}
+
+		body {
+			font-family: '΢���ź�';
+		}
+
+		img {
+			display: block;
+		}
+
+		.dh ul {
+			position: relative;
+			overflow: hidden;
+			width: 910px;
+			height: 306px;
+			margin: 60px auto 0;
+		}
+
+		.dh ul li {
+			float: left;
+			width: 108px;
+			overflow: hidden;
+			height: 100%;
+			position: relative;
+			cursor: pointer;
+		}
+
+		.dh ul li a {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+
+		.dh ul li .layer {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			background: rgba(27, 29, 36, 0.75);
+			height: 100%;
+		}
+
+		.dh ul li .layer .p1 {
+			position: absolute;
+			bottom: 5px;
+			left: 10px;
+		}
+
+		.dh ul li .layer .p2 {
+			position: absolute;
+			bottom: 5px;
+			right: -200%;
+		}
+
+		.dh ul li .layer .p2 b,
+		.dh ul li .layer .p2 span {
+			display: block;
+			font-weight: bold;
+			font-size: 20px;
+		}
+
+		.dh ul li .layer .p1 b,
+		.dh ul li .layer .p1 span {
+			display: block;
+			font-weight: bold;
+			font-size: 14px;
+		}
+
+
+
+		.col1 {
+			color: #00A39A;
+		}
+
+		.col2 {
+			color: #fff;
+		}
+	</style>
+
+</head>
+
+<body>
+	<div class="dh sfq">
+		<ul>
+			<li class="curr">
+				<a href="javascript:;"><img src="images/datouwang1.jpg" alt=""></a>
+				<div class="layer">
+					<p class="p1"><b class="col1"></b><span class="col2">NO.1</span></p>
+					<p class="p2"><b class="col2"></b><span class="col1">NO.1</span></p>
+				</div>
+			</li>
+			<li>
+				<a href="javascript:;"><img src="images/datouwang2.jpg" alt=""></a>
+				<div class="layer">
+					<p class="p1"><b class="col1"></b><span class="col2">NO.2</span></p>
+					<p class="p2"><b class="col2"></b><span class="col1">NO.2</span></p>
+				</div>
+			</li>
+			<li>
+				<a href="javascript:;"><img src="images/datouwang3.jpg" alt=""></a>
+				<div class="layer">
+					<p class="p1"><b class="col1"></b><span class="col2">NO.3</span></p>
+					<p class="p2"><b class="col2"></b><span class="col1">NO.3</span></p>
+				</div>
+			</li>
+			<li>
+				<a href="javascript:;"><img src="images/datouwang4.jpg" alt=""></a>
+				<div class="layer">
+					<p class="p1"><b class="col1"></b><span class="col2">NO.4</span></p>
+					<p class="p2"><b class="col2"></b><span class="col1">NO.4</span></p>
+				</div>
+			</li>
+			<li>
+				<a href="javascript:;"><img src="images/datouwang5.jpg" alt=""></a>
+				<div class="layer">
+					<p class="p1"><b class="col1"></b><span class="col2">NO.5</span></p>
+					<p class="p2"><b class="col2"></b><span class="col1">NO.5</span></p>
+				</div>
+			</li>
+			<li>
+				<a href="javascript:;"><img src="images/datouwang6.jpg" alt=""></a>
+				<div class="layer">
+					<p class="p1"><b class="col1"></b><span class="col2">NO.6</span></p>
+					<p class="p2"><b class="col2"></b><span class="col1">NO.6</span></p>
+				</div>
+			</li>
+			<li>
+				<a href="javascript:;"><img src="images/datouwang3.jpg" alt=""></a>
+				<div class="layer">
+					<p class="p1"><b class="col1"></b><span class="col2">NO.7</span></p>
+					<p class="p2"><b class="col2"></b><span class="col1">NO.7</span></p>
+				</div>
+			</li>
+		</ul>
+	</div>
+
+	<script src="js/jquery.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			jQuery('.dh ul li.curr').animate({ width: '246px' }, 'slow');
+			jQuery('.dh ul li.curr .layer').animate({ height: '60px' }, 'slow');
+			jQuery('.dh ul li.curr .layer .p1').animate({ left: '-200%' }, 'slow');
+			jQuery('.dh ul li.curr .layer .p2').animate({ right: '145px' }, 'slow');
+
+			jQuery('.sfq ul li').hover(function () {
+				var _index = $(this).index();
+
+				$(this).addClass('curr')
+					.stop()
+					.animate({
+						width: '246px'
+					}, 'slow')
+					.siblings()
+					.stop()
+					.animate({
+						width: '108px'
+					}, 'slow')
+					.removeClass('curr');
+
+				$(this).find('.layer').stop().animate({ height: '60px' }, 'slow').parent().siblings().find('.layer').stop().animate({
+					height: '100%'
+				}, 'slow');
+
+				$(this).find('.layer .p1').stop().animate({ left: '-200%' }, 'slow').siblings('.p2').stop().animate({
+					right: '145px'
+				}, 'slow').parent().parent().siblings().find('.layer .p1').stop().animate({ left: '10px' }, 'slow').siblings('.p2').stop().animate({
+					right: '-200%'
+				}, 'slow')
+
+			}, function () {
+
+			})
+		});
+	</script>
+</body>
+
+</html>

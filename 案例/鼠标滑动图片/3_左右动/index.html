@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul {
+            list-style: none
+        }
+
+        div {
+            width: 1200px;
+            height: 400px;
+            margin: 50px auto;
+            border: 1px solid red;
+            overflow: hidden;
+        }
+
+        div li {
+            width: 240px;
+            height: 400px;
+            float: left;
+        }
+        div li img {
+            width: 1226px;
+            height: 446px;
+            background-size: cover;
+        }
+        div ul {
+            width: 1300px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+        <ul>
+            <li><img src="./img/1.jpg" alt=""></li>
+            <li><img src="./img/2.jpg" alt=""></li>
+            <li><img src="./img/3.jpg" alt=""></li>
+            <li><img src="./img/4.jpg" alt=""></li>
+            <li><img src="./img/5.jpg" alt=""></li>
+        </ul>
+    </div>
+    <script>
+        //jQuery中有animate动画函数，用jQuery写手风琴会比较简单，
+        //原声的手风琴虽然没有jQuery的强大，但是实现基本效果还是没有问题的！
+
+        //上来先获取一下元素
+        var box = document.getElementById("box");
+        var ul = box.children[0];
+        var lis = ul.children;
+
+        //循环遍历 lis 
+
+        for (var i = 0; i < lis.length; i++) {
+
+            //给每一个li注册鼠标经过事件 鼠标经过后要排他自己
+
+            lis[i].onmouseover = function () {
+                //再次循环lis，先让所有li的宽度 渐渐地 变为100像素
+                for (var j = 0; j < lis.length; j++) {
+                    
+                    animate(lis[j], { "width": 100 });
+                }
+
+                //留下我当前鼠标移入的li 让当前li的宽度 渐渐地 变为800像素
+                animate(this, { "width": 800 });
+            };
+        }
+
+        //鼠标离开当前li的时候， 让所有的li的宽度 渐渐地 变为240像素
+        box.onmouseout = function () {
+            for (var i = 0; i < lis.length; i++) {
+                animate(lis[i], { "width": 240 });
+            }
+        };
+
+        //先封装个动画函数
+        //obj 是当前鼠标移入的li
+        //json 是li传进来的宽度
+        function animate(obj, json) {
+            //关闭上一个定时器
+            clearInterval(obj.timer);
+             //开启一个定时器
+            obj.timer = setInterval(function () {
+
+                //定时器开关 ,用来判断是否开启定时器
+                var flag = true;
+                 //遍历json 
+                for (var k in json) {
+                    //当前位置
+                    var leader = parseInt(getStyle(obj, k)) || 0;
+                    //目标位置
+                    var target = json[k];
+                    //计算一下步长    步长 = 目标位置 - 当前位置
+                    var step = (target - leader) / 10;
+                    //步长取整
+                    step = step > 0 ? Math.ceil(step) : Math.floor(step);
+                    leader = leader + step;
+                    //盒子移动: 盒子现在的位置 + 步长取整
+                    obj.style[k] = leader + "px";
+                    //只要其中一个不满足条件，就不停止定时器
+                    if (leader != target) {
+                        flag = false;//告诉标记 当前这个属性还没到达
+                    }
+                }
+
+                //如果此时仍然为true 就说明真的都到达了目标值
+                //全部属性都到达目标值才能关闭定时器
+                if (flag) {
+                    clearInterval(obj.timer);
+                }
+            }, 15);
+        }
+
+        //获得当前的样式
+        function getStyle(obj, attr) {
+            if (window.getComputedStyle) {
+                return window.getComputedStyle(obj, null)[attr];
+            } else {
+                return obj.currentStyle[attr];
+            }
+        }
+
+    </script>
+</body>
+
+</html>
